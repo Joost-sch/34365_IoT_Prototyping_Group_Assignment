@@ -564,6 +564,7 @@ void Epd::SetFrameMemoryPartial(
  *          executed if check code = 0xA5.
  *          You can use Epd::Init() to awaken
  */
+
 void Epd::Sleep()
 {
 	SendCommand(0x10); //enter deep sleep

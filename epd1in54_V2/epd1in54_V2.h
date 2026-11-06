@@ -45,7 +45,7 @@ public:
 
 	Epd();
 	~Epd();
-	// int  Init(void);
+	//int  Init(void);
 	int LDirInit(void);
 	int HDirInit(void);
 	void SendCommand(unsigned char command);

@@ -21,13 +21,7 @@ void setup()
   epd.LDirInit();
   epd.Clear();
 
-  //paint.SetWidth(200);
-  //paint.SetHeight(24);
-//
-  //Serial.println("e-Paper paint");
-  //paint.Clear(COLORED);
-  //paint.DrawStringAt(30, 4, "Hello world!", &Font16, UNCOLORED);
-  //epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
+  
 //
   //paint.Clear(UNCOLORED);
   //paint.DrawStringAt(30, 4, "e-Paper Demo", &Font16, COLORED);
@@ -61,22 +55,10 @@ void setup()
   // epd.Display(IMAGE_DATA);
 
   //Part display
-  epd.HDirInit();
-  epd.DisplayPartBaseImage(SMILEY_16X16);
+  //epd.HDirInit();
+  //epd.DisplayPartBaseImage(SMILEY);
 
-  paint.SetWidth(40);
-  paint.SetHeight(60);
-  paint.Clear(UNCOLORED);
-
-  char i = 0;
-  char str[10][10] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-  for (i = 0; i < 10; i++) {
-    paint.Clear(UNCOLORED);
-    paint.DrawStringAt(10, 10, str[i], &Font24, COLORED);
-    epd.SetFrameMemoryPartial(paint.GetImage(), 80, 70, paint.GetWidth(), paint.GetHeight());
-    epd.DisplayPartFrame();
-    delay(100);
-  }
+  
 
   //Serial.println("e-Paper clear and goto sleep");
   //epd.HDirInit();
@@ -86,5 +68,44 @@ void setup()
 
 void loop()
 {
+  //Part display
+  epd.LDirInit();
+  epd.DisplayPartBaseImage(SMALL_SAD_SMILEY);
 
+  paint.SetWidth(200);
+  paint.SetHeight(24);
+  paint.Clear(COLORED);
+  
+  paint.DrawStringAt(30, 4, "Good morning!", &Font16, UNCOLORED);
+  epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
+  epd.DisplayPartFrame();
+
+  //paint.SetWidth(40);
+  //paint.SetHeight(40);
+  //paint.Clear(UNCOLORED);
+//
+  //char i = 0;
+  //char str[10][10] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+  //for (i = 0; i < 10; i++) {
+  //  paint.Clear(UNCOLORED);
+  //  paint.DrawStringAt(10, 10, str[i], &Font24, COLORED);
+  //  epd.SetFrameMemoryPartial(paint.GetImage(), 80, 70, paint.GetWidth(), paint.GetHeight());
+  //  epd.DisplayPartFrame();
+  //  delay(100);
+  //}
+
+  epd.Sleep();
+
+  delay(1000);
+
+  epd.LDirInit();
+
+  paint.SetWidth(200);
+  paint.SetHeight(24);
+  paint.Clear(COLORED);
+
+  paint.Clear(COLORED);
+  paint.DrawStringAt(40, 4, "Good night!", &Font16, UNCOLORED);
+  epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
+  epd.DisplayPartFrame();
 }
