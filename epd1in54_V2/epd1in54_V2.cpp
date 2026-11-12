@@ -483,7 +483,7 @@ void Epd::SetFrameMemory(
 	/* send the image data */
 	for (int j = 0; j < y_end - y + 1; j++) {
 		for (int i = 0; i < (x_end - x + 1) / 8; i++) {
-			SendData(image_buffer[i + j * (image_width / 8)]);
+			SendData(pgm_read_byte(&image_buffer[i + j * (image_width / 8)]));
 		}
 	}
 }
@@ -551,7 +551,7 @@ void Epd::SetFrameMemoryPartial(
 	/* send the image data */
 	for (int j = 0; j < y_end - y + 1; j++) {
 		for (int i = 0; i < (x_end - x + 1) / 8; i++) {
-			SendData(image_buffer[i + j * (image_width / 8)]);
+			SendData(pgm_read_byte(&image_buffer[i + j * (image_width / 8)]));
 		}
 	}
 }

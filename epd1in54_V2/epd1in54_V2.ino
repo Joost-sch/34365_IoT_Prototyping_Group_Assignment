@@ -1,111 +1,145 @@
+/* Connect the e-paper as follows:
+ * e-paper -- Arduino
+ * Busy -- 7
+ * RST -- 8
+ * DC -- 9
+ * CS -- 10
+ * CLK -- 13
+ * DIN -- 11
+ * Vcc -- VCC
+ * Gnd -- Gnd
+ *
+ * Connect the RN2xx3 as follows:
+ * RN2xx3 -- Arduino
+ * Uart TX -- 6
+ * Uart RX -- 5
+ * Reset -- 4
+ * Vcc -- 3.3V
+ * Gnd -- Gnd
+ */
+
 #include <SPI.h>
 #include "epd1in54_V2.h"
 #include "imagedata.h"
 #include "epdpaint.h"
 #include <stdio.h>
+#include <rn2xx3.h>
+#include <SoftwareSerial.h>
 
 Epd epd;
 unsigned char image[1024];
 Paint paint(image, 0, 0);
 
-unsigned long time_start_ms;
-unsigned long time_now_s;
 #define COLORED     0
 #define UNCOLORED   1
+
+SoftwareSerial mySerial(6, 5); // RX, TX
+
+//create an instance of the rn2xx3 library,
+//giving the software serial as port to use
+rn2xx3 myLora(mySerial);
 
 void setup()
 {
   // put your setup code here, to run once:
-  Serial.begin(115200);
-  Serial.println("e-Paper init and clear");
+  Serial.begin(57600);
+  mySerial.begin(9600); //serial port to radio
+  Serial.println("Startup");
+
   epd.LDirInit();
   epd.Clear();
 
-  
-//
-  //paint.Clear(UNCOLORED);
-  //paint.DrawStringAt(30, 4, "e-Paper Demo", &Font16, COLORED);
-  //epd.SetFrameMemory(paint.GetImage(), 0, 30, paint.GetWidth(), paint.GetHeight());
-//
-  //paint.SetWidth(64);
-  //paint.SetHeight(64);
-//
-  //paint.Clear(UNCOLORED);
-  //paint.DrawRectangle(0, 0, 40, 50, COLORED);
-  //paint.DrawLine(0, 0, 40, 50, COLORED);
-  //paint.DrawLine(40, 0, 0, 50, COLORED);
-  //epd.SetFrameMemory(paint.GetImage(), 16, 60, paint.GetWidth(), paint.GetHeight());
-//
-  //paint.Clear(UNCOLORED);
-  //paint.DrawCircle(32, 32, 30, COLORED);
-  //epd.SetFrameMemory(paint.GetImage(), 120, 60, paint.GetWidth(), paint.GetHeight());
-//
-  //paint.Clear(UNCOLORED);
-  //paint.DrawFilledRectangle(0, 0, 40, 50, COLORED);
-  //epd.SetFrameMemory(paint.GetImage(), 16, 130, paint.GetWidth(), paint.GetHeight());
-//
-  //paint.Clear(UNCOLORED);
-  //paint.DrawFilledCircle(32, 32, 30, COLORED);
-  //epd.SetFrameMemory(paint.GetImage(), 120, 130, paint.GetWidth(), paint.GetHeight());
-  //epd.DisplayFrame();
-  //delay(2000);
-//
-  //Serial.println("e-Paper show pic");
-  //epd.HDirInit();
-  // epd.Display(IMAGE_DATA);
-
-  //Part display
-  //epd.HDirInit();
-  //epd.DisplayPartBaseImage(SMILEY);
 
   
 
-  //Serial.println("e-Paper clear and goto sleep");
-  //epd.HDirInit();
-  //epd.Clear();
-  //epd.Sleep();
+}
+
+void initialize_radio()
+{
+  //reset rn2483
+  pinMode(4, OUTPUT);
+  digitalWrite(4, LOW);
+  delay(500);
+  digitalWrite(4, HIGH);
+
+  delay(100); //wait for the RN2xx3's startup message
+  mySerial.flush();
+
+  //Autobaud the rn2483 module to 9600. The default would otherwise be 57600.
+  myLora.autobaud();
+
+  //check communication with radio
+  String hweui = myLora.hweui();
+  while(hweui.length() != 16)
+  {
+    Serial.println("Communication with RN2xx3 unsuccessful. Power cycle the board.");
+    Serial.println(hweui);
+    delay(10000);
+    hweui = myLora.hweui();
+  }
+
+
+  //configure your keys and join the network
+  Serial.println("Trying to join TTN");
+  bool join_result = false;
+
+  const char *appEui = "193C3D528C9C2FFF";
+  const char *appKey = "8B2F38DF86BDA7881502499D456FD9C9";
+
+  join_result = myLora.initOTAA(appEui, appKey);
+
+
+  while(!join_result)
+  {
+    Serial.println("Unable to join. Are your keys correct, and do you have TTN coverage?");
+    delay(60000); //delay a minute before retry
+    join_result = myLora.init();
+  }
+  Serial.println("Successfully joined TTN");
+
 }
 
 void loop()
 {
-  //Part display
-  epd.LDirInit();
-  epd.DisplayPartBaseImage(SMALL_SAD_SMILEY);
+epd.LDirInit();
+// Set the static background first
+epd.DisplayPartBaseImage(IMAGE_DATA);
 
-  paint.SetWidth(200);
-  paint.SetHeight(24);
-  paint.Clear(COLORED);
+// Update a smaller region
+epd.SetFrameMemoryPartial(
+    SMALL_SAD_SMILEY,
+    48,
+    52,
+    96,
+    96
+);
+
+// Actually refresh the partial region
+epd.DisplayPartFrame();
   
-  paint.DrawStringAt(30, 4, "Good morning!", &Font16, UNCOLORED);
-  epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
-  epd.DisplayPartFrame();
-
-  //paint.SetWidth(40);
-  //paint.SetHeight(40);
-  //paint.Clear(UNCOLORED);
+  //paint.SetWidth(200);
+  //paint.SetHeight(24);
+  //paint.Clear(COLORED);
+  //
+  //paint.DrawStringAt(30, 4, "Good morning!", &Font16, UNCOLORED);
+  //epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
+  //epd.DisplayPartFrame();
 //
-  //char i = 0;
-  //char str[10][10] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-  //for (i = 0; i < 10; i++) {
-  //  paint.Clear(UNCOLORED);
-  //  paint.DrawStringAt(10, 10, str[i], &Font24, COLORED);
-  //  epd.SetFrameMemoryPartial(paint.GetImage(), 80, 70, paint.GetWidth(), paint.GetHeight());
-  //  epd.DisplayPartFrame();
-  //  delay(100);
-  //}
-
-  epd.Sleep();
-
-  delay(1000);
-
-  epd.LDirInit();
-
-  paint.SetWidth(200);
-  paint.SetHeight(24);
-  paint.Clear(COLORED);
-
-  paint.Clear(COLORED);
-  paint.DrawStringAt(40, 4, "Good night!", &Font16, UNCOLORED);
-  epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
-  epd.DisplayPartFrame();
+  //epd.Sleep();
+//
+  //delay(1000);
+//
+  //epd.LDirInit();
+//
+  //paint.SetWidth(200);
+  //paint.SetHeight(24);
+  //paint.Clear(COLORED);
+//
+  //paint.Clear(COLORED);
+  //paint.DrawStringAt(40, 4, "Good night!", &Font16, UNCOLORED);
+  //epd.SetFrameMemory(paint.GetImage(), 0, 10, paint.GetWidth(), paint.GetHeight());
+  //epd.DisplayPartFrame();
+//
+  //epd.Sleep();
+  //delay(1000);
 }
