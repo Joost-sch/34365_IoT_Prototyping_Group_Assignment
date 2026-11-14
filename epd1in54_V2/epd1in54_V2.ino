@@ -18,6 +18,15 @@
  * Gnd -- Gnd
  */
 
+#define TX_PIN 6
+#define RX_PIN 5
+#define reset_PIN 4
+
+#define X_POS 48
+#define Y_POS 52
+#define IMAGE_WIDTH 96
+#define IMAGE_HEIGHT 96
+
 #include <SPI.h>
 #include "epd1in54_V2.h"
 #include "imagedata.h"
@@ -33,7 +42,7 @@ Paint paint(image, 0, 0);
 #define COLORED     0
 #define UNCOLORED   1
 
-SoftwareSerial mySerial(6, 5); // RX, TX
+SoftwareSerial mySerial(TX_PIN, RX_PIN); // RX, TX
 
 //create an instance of the rn2xx3 library,
 //giving the software serial as port to use
@@ -48,19 +57,15 @@ void setup()
 
   epd.LDirInit();
   epd.Clear();
-
-
-  
-
 }
 
 void initialize_radio()
 {
   //reset rn2483
-  pinMode(4, OUTPUT);
-  digitalWrite(4, LOW);
+  pinMode(reset_PIN, OUTPUT);
+  digitalWrite(reset_PIN, LOW);
   delay(500);
-  digitalWrite(4, HIGH);
+  digitalWrite(reset_PIN, HIGH);
 
   delay(100); //wait for the RN2xx3's startup message
   mySerial.flush();
@@ -103,19 +108,54 @@ void loop()
 {
 epd.LDirInit();
 // Set the static background first
-epd.DisplayPartBaseImage(IMAGE_DATA);
+//epd.DisplayPartBaseImage(IMAGE_DATA);
 
-// Update a smaller region
-epd.SetFrameMemoryPartial(
-    SMALL_SAD_SMILEY,
-    48,
-    52,
-    96,
-    96
-);
+if (Serial.available() > 0) {
+        int input = Serial.parseInt();
 
-// Actually refresh the partial region
-epd.DisplayPartFrame();
+        // Clear remaining serial characters
+        while (Serial.available() > 0) {
+            Serial.read();
+        }
+
+        const unsigned char* selectedImage = nullptr;
+        const char* imageName = "";
+
+        switch (input) {
+            case 0:
+                selectedImage = SAD;
+                imageName = "SAD";
+                break;
+
+            case 1:
+                selectedImage = NEUTRAL;
+                imageName = "NEUTRAL";
+                break;
+
+            case 2:
+                selectedImage = HAPPY;
+                imageName = "HAPPY";
+                break;
+
+            default:
+                Serial.println("Invalid input! Enter 0, 1, or 2.");
+                return;
+        }
+
+        epd.SetFrameMemory(
+            selectedImage,
+            X_POS,
+            Y_POS,
+            IMAGE_WIDTH,
+            IMAGE_HEIGHT
+        );
+
+        epd.DisplayFrame();
+
+        Serial.print("Displaying ");
+        Serial.println(imageName);
+    }
+
   
   //paint.SetWidth(200);
   //paint.SetHeight(24);

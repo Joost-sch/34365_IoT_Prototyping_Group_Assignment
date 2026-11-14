@@ -24,8 +24,9 @@
  */
 
 extern const unsigned char IMAGE_DATA[];
-extern const unsigned char SAD_SMILEY[];
-extern const unsigned char SMALL_SAD_SMILEY [];
+extern const unsigned char SAD[];
+extern const unsigned char NEUTRAL [];
+extern const unsigned char HAPPY[];
 
 /* FILE END */
 

@@ -5,14 +5,14 @@ import re
 # ==============================
 
 # File paths
-input_file = r"C:/Users/fbieh/OneDrive - Danmarks Tekniske Universitet/34365 - IoT prototyping/small_sad_smiley.xbm"
-output_file = r"C:/Users/fbieh/OneDrive - Danmarks Tekniske Universitet/34365 - IoT prototyping/small_sad_smiley_inverted.txt"
+input_file = r"C:/Users/fbieh/OneDrive - Danmarks Tekniske Universitet/34365 - IoT prototyping/happy.xbm"
+output_file = r"C:/Users/fbieh/OneDrive - Danmarks Tekniske Universitet/34365 - IoT prototyping/happy_inverted.txt"
 
-new_rows = 200
-new_cols = 25
+new_rows = 96
+new_cols = 12
 
 # Define new matrix column order (1-based indexing)
-column_order = [25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1]
+column_order = [12,11,10,9,8,7,6,5,4,3,2,1]
 
 
 # ==============================
