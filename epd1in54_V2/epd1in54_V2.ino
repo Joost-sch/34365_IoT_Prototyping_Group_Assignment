@@ -24,8 +24,8 @@
 
 #define X_POS 48
 #define Y_POS 52
-#define IMAGE_WIDTH 96
-#define IMAGE_HEIGHT 96
+#define IMAGE_WIDTH 104
+#define IMAGE_HEIGHT 143
 
 #include <SPI.h>
 #include "epd1in54_V2.h"
@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <rn2xx3.h>
 #include <SoftwareSerial.h>
+#include "dewdrop.h"
 
 Epd epd;
 unsigned char image[1024];
@@ -107,6 +108,7 @@ void initialize_radio()
 void loop()
 {
 epd.LDirInit();
+
 // Set the static background first
 //epd.DisplayPartBaseImage(IMAGE_DATA);
 
@@ -123,17 +125,17 @@ if (Serial.available() > 0) {
 
         switch (input) {
             case 0:
-                selectedImage = SAD;
+                selectedImage = dewdropSad;
                 imageName = "SAD";
                 break;
 
             case 1:
-                selectedImage = NEUTRAL;
+                selectedImage = dewdropNeutral;
                 imageName = "NEUTRAL";
                 break;
 
             case 2:
-                selectedImage = HAPPY;
+                selectedImage = dewdropHappy;
                 imageName = "HAPPY";
                 break;
 
