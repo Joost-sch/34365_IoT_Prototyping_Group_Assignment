@@ -1,0 +1,16 @@
+# Node build output and dependencies
+**/node_modules/
+**/dist/
+
+# Local environment files; keep the safe template
+.env
+.env.*
+!.env.example
+
+# Design/source notes not required to build the app
+app/supabase.md
+app/figma_prototype/
+
+# OS metadata
+.DS_Store
+Thumbs.db
