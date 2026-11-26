@@ -10,6 +10,10 @@ The selected profile's `device_id` filters `daily_water_progress` and
 history and as a fallback if today's progress row is absent.
 History can be navigated by week; the displayed range includes the year.
 
+## Login info
+email: dewdrop@gmail.com
+pw: Charlie-1&
+
 ## Local development
 
 1. Copy `.env.example` to `.env.local` (Vite does not load `.env.example`).
