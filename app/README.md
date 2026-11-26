@@ -12,6 +12,7 @@ History can be navigated by week; the displayed range includes the year.
 
 ## Login info
 email: dewdrop@gmail.com
+
 pw: Charlie-1&
 
 ## Local development
